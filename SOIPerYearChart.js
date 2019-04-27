@@ -1,10 +1,11 @@
 class SOIPerYearChart {
   constructor(SOI) {
-    var SOI = crossfilter();
+    // console.log(SOI);
     this.SOIDimension = SOI.dimension(function(SOI) {
       return SOI.year + SOI.SOIJan;
     });
-    this.createGroupFromDimension();
+    // console.log(this.SOIDimension.top(Infinity));
+    // this.createGroupFromDimension();
     this.chartContainer = d3.select('#yearSOICountChart');
     this.chart = null; // This will hold chart SVG Dom element reference
     this.chartWidth = 960; // Width in pixels
@@ -16,40 +17,40 @@ class SOIPerYearChart {
     this.tooltipContainer = null;
   }
 
-  createGroupFromDimension() {
-    // console.log(this.SOIDimension.group().reduce);
-    this.SOIPerYearGroup = this.SOIDimension.group()
-      .reduce(
-        // reduceAdd()
-        (output, input) => {
-          output.count++;
-          output.year = input.year;
-          return output;
-        },
-        // reduceRemove()
-        (output, input) => {
-          --output.count;
-          output.year = input.year;
-          return output;
-        },
-        // reduceInitial()
-        () => {
-          return {
-            year: null,
-            count: 0
-          };
-        }
-      )
-      .order(function(p) {
-        return p.count;
-      });
-  }
+  // createGroupFromDimension() {
+  //   // console.log(this.SOIDimension.group().reduce);
+  //   this.SOIPerYearGroup = this.SOIDimension.group()
+  //     .reduce(
+  //       // reduceAdd()
+  //       (output, input) => {
+  //         output.count++;
+  //         output.year = input.year;
+  //         return output;
+  //       },
+  //       // reduceRemove()
+  //       (output, input) => {
+  //         --output.count;
+  //         output.year = input.year;
+  //         return output;
+  //       },
+  //       // reduceInitial()
+  //       () => {
+  //         return {
+  //           year: null,
+  //           count: 0
+  //         };
+  //       }
+  //     )
+  //     .order(function(p) {
+  //       return p.count;
+  //     });
+  // }
 
   render() {
     this.createSvg();
     this.initScales();
     this.drawAxes();
-    // this.drawLine();
+    this.drawLine();
     // this.drawPoints();
   }
 
@@ -66,7 +67,7 @@ class SOIPerYearChart {
     let chartWidth = +this.chart.attr('width') - this.margin;
     let chartHeight = +this.chart.attr('height') - this.margin;
 
-    this.countScale = d3.scaleLinear().domain([-5, 5]).range([chartHeight, this.margin]);
+    this.countScale = d3.scaleLinear().domain([-40, 40]).range([chartHeight, this.margin]);
     // TODO We are hardcoding years for now
     this.yearScale = d3.scaleLinear().domain([1933, 1992]).range([this.margin, chartWidth]);
   }
@@ -87,6 +88,26 @@ class SOIPerYearChart {
       .attr('transform', 'translate(0, ' + this.chartHeightWithoutMargin + ')')
       .call(yearAxis);
   }
-}
 
-// module.exports = SOIPerYearChart;
+  drawLine () {
+    let line = d3.line()
+      .x((d) => {
+        // console.log(d);
+        return this.yearScale(d.year);
+      })
+      .y((d) => {
+        return this.countScale(d.SOIJan);
+      });
+
+    // this.SOIPerYearGroup.order((d) => {
+    //   return d.year;
+    // });
+    console.log(this.SOIDimension.top(Infinity));
+    this.chart
+      .append('g')
+      .attr('class', 'c-line')
+      .append('path')
+      .attr('d', line(this.SOIDimension.top(Infinity)));
+  }
+
+}
