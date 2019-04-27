@@ -66,3 +66,16 @@ a {
   fill: none;
   opacity: 0.6;
 }
+
+.c-chart .c-points circle {
+    fill: #2055b6;
+    stroke: #2055b6;
+    stroke-width: 3px;
+    opacity: 0.8;
+    transition: all 0.2s ease-out;
+}
+    .c-chart .c-points circle:hover {
+      fill: #5a8ae2;
+      opacity: 1;
+      cursor: pointer;
+    }

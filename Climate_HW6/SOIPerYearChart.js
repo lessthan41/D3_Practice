@@ -20,9 +20,8 @@ class SOIPerYearChart {
     this.createSvg();
     this.initScales();
     this.drawAxes();
-    // this.drawAbs();
     this.drawLine();
-    // this.drawPoints();
+    this.drawPoints();
   }
 
   createSvg () {
@@ -50,25 +49,28 @@ class SOIPerYearChart {
       .append('g')
       .attr('class', 'c-axis')
       .attr('transform', 'translate(' + this.margin + ', 0)')
-      .call(countAxis);
+      .call(countAxis)
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '15')
+        .attr('dy', '2.5em')
+        .attr('font-size', 'larger')
+        .text("SOI Index");
 
     this.chart
       .append('g')
       .attr('class', 'c-axis')
       .attr('transform', 'translate(0, ' + this.chartHeightWithoutMargin + ')')
-      .call(yearAxis);
+      .call(yearAxis)
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '500')
+        .attr('dy', '3.5em')
+        .attr('font-size', 'larger')
+        .text("Year");
   }
-
-  // drawAbs(){
-  //   let line = d3.line()
-  //     .x((d) => {
-  //       return this.yearScale(d.year);
-  //     })
-  //     .y((d) => {
-  //       return 0;
-  //     });
-  //
-  // }
 
   /**
   * Reverse the Dataset
@@ -123,5 +125,23 @@ class SOIPerYearChart {
       .attr('d', line([{year: 1933, month: "Jan", SOI: 0}, {year: 1993, month: "Dec", SOI: 0}]));
 
   }
+
+  drawPoints(){
+    this.chart
+      .append('g')
+      .attr('class', 'c-points')
+      .selectAll('circle')
+      .data(this.SOIDimension.top(Infinity))
+      .enter()
+      .append('circle')
+      .attr('cx', (d) => {
+        return this.yearScale(d.year);
+      })
+      .attr('cy', (d) => {
+        return this.countScale(d.SOI);
+      })
+      .attr('r', '2');
+  }
+
 
 }
