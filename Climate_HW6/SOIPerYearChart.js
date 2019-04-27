@@ -140,7 +140,54 @@ class SOIPerYearChart {
       .attr('cy', (d) => {
         return this.countScale(d.SOI);
       })
-      .attr('r', '2');
+      .attr('r', '2')
+
+    // Hover
+    // ... Part before this line stays the same
+
+  .on('mouseover', (d) => {
+    this.showTooltip(
+      d.month + ', ' + parseInt(d.year) + ': <br>' + Math.round(d.SOI*100)/100,
+      d3.event.pageX,
+      d3.event.pageY
+    );
+  })
+  .on('mouseout', (d) => {
+    this.hideTooltip();
+  });
+  }
+
+  createTooltipIfDoesntExist () {
+    if (this.tooltipContainer !== null) {
+      return;
+    }
+
+    this.tooltipContainer = this.chartContainer
+      .append('div')
+      .attr('class', 'c-tooltip');
+  }
+
+  showTooltip (content, left, top) {
+    this.createTooltipIfDoesntExist();
+
+    this.tooltipContainer
+      .html(content)
+      .style('left', left + 'px')
+      .style('top', top + 'px');
+
+    this.tooltipContainer
+      .transition()
+      .duration(100)
+      .style('opacity', 1);
+  }
+
+  hideTooltip () {
+    this.createTooltipIfDoesntExist();
+
+    this.tooltipContainer
+      .transition()
+      .duration(300)
+      .style('opacity', 0);
   }
 
 

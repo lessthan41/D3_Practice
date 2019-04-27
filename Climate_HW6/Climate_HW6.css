@@ -79,3 +79,11 @@ a {
       opacity: 1;
       cursor: pointer;
     }
+
+.c-tooltip {
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #2055b6;
+  position: absolute;
+  background: aliceblue;
+}
