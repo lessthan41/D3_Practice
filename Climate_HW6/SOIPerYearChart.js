@@ -77,7 +77,7 @@ class SOIPerYearChart {
   */
   dimensionReorder(SOI) {
     let reorder = SOI.reverse();
-    // console.log(reorder);
+    console.log(reorder);
     let tmp, toInsert;
     let i, j = 0;
 
