@@ -141,20 +141,19 @@ class SOIPerYearChart {
         return this.countScale(d.SOI);
       })
       .attr('r', '2')
+      // Hover
+      .on('mouseover', (d) => {
+        this.showTooltip(
+          d.month + ', ' + parseInt(d.year) + ': <br>' + Math.round(d.SOI*100)/100,
+          d3.event.pageX,
+          d3.event.pageY
+        );
+      })
+      .on('mouseleave', (d) => {
+        this.hideTooltip();
+      });
 
-    // Hover
-    // ... Part before this line stays the same
 
-  .on('mouseover', (d) => {
-    this.showTooltip(
-      d.month + ', ' + parseInt(d.year) + ': <br>' + Math.round(d.SOI*100)/100,
-      d3.event.pageX,
-      d3.event.pageY
-    );
-  })
-  .on('mouseout', (d) => {
-    this.hideTooltip();
-  });
   }
 
   createTooltipIfDoesntExist () {
