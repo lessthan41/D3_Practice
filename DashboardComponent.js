@@ -1,8 +1,9 @@
 class DashboardComponent {
   constructor (SOI) {
-    // We don't store athletes
     // console.log(SOI);
+    // We don't store athletes
     this.SOI = crossfilter(SOI);
+    // console.log(this.SOI);
   }
 
   init () {
@@ -10,7 +11,6 @@ class DashboardComponent {
   }
 
   initSOIChart () {
-    // console.log(this.SOI);
     let varSOIPerYearChart = new SOIPerYearChart(this.SOI);
     varSOIPerYearChart.render();
   }

@@ -2,10 +2,9 @@ class SOIPerYearChart {
   constructor(SOI) {
     // console.log(SOI);
     this.SOIDimension = SOI.dimension(function(SOI) {
-      return SOI.year + SOI.SOIJan;
+      return SOI.year + SOI.month;
     });
     // console.log(this.SOIDimension.top(Infinity));
-    // this.createGroupFromDimension();
     this.chartContainer = d3.select('#yearSOICountChart');
     this.chart = null; // This will hold chart SVG Dom element reference
     this.chartWidth = 960; // Width in pixels
@@ -17,39 +16,11 @@ class SOIPerYearChart {
     this.tooltipContainer = null;
   }
 
-  // createGroupFromDimension() {
-  //   // console.log(this.SOIDimension.group().reduce);
-  //   this.SOIPerYearGroup = this.SOIDimension.group()
-  //     .reduce(
-  //       // reduceAdd()
-  //       (output, input) => {
-  //         output.count++;
-  //         output.year = input.year;
-  //         return output;
-  //       },
-  //       // reduceRemove()
-  //       (output, input) => {
-  //         --output.count;
-  //         output.year = input.year;
-  //         return output;
-  //       },
-  //       // reduceInitial()
-  //       () => {
-  //         return {
-  //           year: null,
-  //           count: 0
-  //         };
-  //       }
-  //     )
-  //     .order(function(p) {
-  //       return p.count;
-  //     });
-  // }
-
   render() {
     this.createSvg();
     this.initScales();
     this.drawAxes();
+    // this.drawAbs();
     this.drawLine();
     // this.drawPoints();
   }
@@ -63,11 +34,10 @@ class SOIPerYearChart {
 
   initScales () {
     // TODO potentially unsafe, if top() returns []
-    // let maxCount = this.SOIPerYearGroup.top(1)[0];
     let chartWidth = +this.chart.attr('width') - this.margin;
     let chartHeight = +this.chart.attr('height') - this.margin;
 
-    this.countScale = d3.scaleLinear().domain([-40, 40]).range([chartHeight, this.margin]);
+    this.countScale = d3.scaleLinear().domain([-50, 50]).range([chartHeight, this.margin]);
     // TODO We are hardcoding years for now
     this.yearScale = d3.scaleLinear().domain([1933, 1992]).range([this.margin, chartWidth]);
   }
@@ -89,25 +59,69 @@ class SOIPerYearChart {
       .call(yearAxis);
   }
 
+  // drawAbs(){
+  //   let line = d3.line()
+  //     .x((d) => {
+  //       return this.yearScale(d.year);
+  //     })
+  //     .y((d) => {
+  //       return 0;
+  //     });
+  //
+  // }
+
+  /**
+  * Reverse the Dataset
+  */
+  dimensionReorder(SOI) {
+    let reorder = SOI.reverse();
+    // console.log(reorder);
+    let tmp, toInsert;
+    let i, j = 0;
+
+    for(i=0; i<60; i++){
+      tmp = reorder[11+12*i];
+      // console.log(tmp);
+      toInsert =[
+        tmp, reorder[0+12*i], reorder[1+12*i],
+        reorder[2+12*i], reorder[3+12*i], reorder[4+12*i],
+        reorder[5+12*i], reorder[6+12*i], reorder[7+12*i],
+        reorder[8+12*i], reorder[9+12*i], reorder[10+12*i]
+      ];
+
+      for(j=0; j<12; j++){
+        reorder[j+12*i] = toInsert[j];
+      }
+    }
+    // console.log(reorder);
+    return(reorder);
+  }
+
   drawLine () {
+
     let line = d3.line()
       .x((d) => {
-        // console.log(d);
         return this.yearScale(d.year);
       })
       .y((d) => {
-        return this.countScale(d.SOIJan);
+        return this.countScale(d.SOI);
       });
 
-    // this.SOIPerYearGroup.order((d) => {
-    //   return d.year;
-    // });
-    console.log(this.SOIDimension.top(Infinity));
+    // console.log(this.dimensionReorder(this.SOIDimension.top(Infinity)));
+    // Line
     this.chart
       .append('g')
       .attr('class', 'c-line')
       .append('path')
-      .attr('d', line(this.SOIDimension.top(Infinity)));
+      .attr('d', line(this.dimensionReorder(this.SOIDimension.top(Infinity))));
+
+    // Absline
+    this.chart
+      .append('g')
+      .attr('class', 'abs-line')
+      .append('path')
+      .attr('d', line([{year: 1933, month: "Jan", SOI: 0}, {year: 1993, month: "Dec", SOI: 0}]));
+
   }
 
 }
