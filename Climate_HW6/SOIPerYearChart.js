@@ -36,9 +36,9 @@ class SOIPerYearChart {
     let chartWidth = +this.chart.attr('width') - this.margin;
     let chartHeight = +this.chart.attr('height') - this.margin;
 
-    this.countScale = d3.scaleLinear().domain([-50, 50]).range([chartHeight, this.margin]);
+    this.countScale = d3.scaleLinear().domain([-40, 40]).range([chartHeight, this.margin]);
     // TODO We are hardcoding years for now
-    this.yearScale = d3.scaleLinear().domain([1933, 1992]).range([this.margin, chartWidth]);
+    this.yearScale = d3.scaleLinear().domain([1979, 2020]).range([this.margin, chartWidth]);
   }
 
   drawAxes () {
@@ -77,11 +77,11 @@ class SOIPerYearChart {
   */
   dimensionReorder(SOI) {
     let reorder = SOI.reverse();
-    console.log(reorder);
+    // console.log(reorder);
     let tmp, toInsert;
     let i, j = 0;
 
-    for(i=0; i<60; i++){
+    for(i=0; i<39; i++){
       tmp = reorder[11+12*i];
       // console.log(tmp);
       toInsert =[
@@ -94,6 +94,11 @@ class SOIPerYearChart {
       for(j=0; j<12; j++){
         reorder[j+12*i] = toInsert[j];
       }
+    }
+
+    toInsert =[reorder[470], reorder[468], reorder[469]];
+    for(j=0; j<3; j++){
+      reorder[468 + j] = toInsert[j];
     }
     // console.log(reorder);
     return(reorder);
@@ -122,7 +127,7 @@ class SOIPerYearChart {
       .append('g')
       .attr('class', 'abs-line')
       .append('path')
-      .attr('d', line([{year: 1933, month: "Jan", SOI: 0}, {year: 1993, month: "Dec", SOI: 0}]));
+      .attr('d', line([{year: 1979, month: "Jan", SOI: 0}, {year: 2020, month: "Dec", SOI: 0}]));
 
   }
 
