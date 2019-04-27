@@ -1,6 +1,6 @@
 
 (function () {
-  d3.dsv(',', 'https://raw.githubusercontent.com/lessthan41/D3_Practice/master/SOI.csv', function (row) {
+  d3.dsv(',', 'https://raw.githubusercontent.com/lessthan41/D3_Practice/master/Climate_HW6/SOI.csv', function (row) {
     return {
       year: +row['Year'],
       month: row['Month'],
