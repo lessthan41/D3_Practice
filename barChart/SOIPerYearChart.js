@@ -98,8 +98,16 @@ class SOIPerYearChart {
           d3.event.pageY
         );
       })
-      .on('mouseleave', (d) => {
+      .on('mouseout', (d) => {
         this.hideTooltip();
+      })
+      .on('mousemove', (d) => {
+        this.hideTooltip();
+        this.showTooltip(
+          parseInt(d.year) + ':  ' + Math.round(d.SOI*100)/100,
+          d3.event.pageX,
+          d3.event.pageY
+        );
       });
 
     // Absline
@@ -111,36 +119,6 @@ class SOIPerYearChart {
 
   }
 
-  drawPoints(){
-    this.chart
-      .append('g')
-      .attr('class', 'c-points')
-      .selectAll('circle')
-      .data(this.SOIDimension.top(Infinity))
-      .enter()
-      .append('circle')
-      .attr('cx', (d) => {
-        return this.yearScale(d.year);
-      })
-      .attr('cy', (d) => {
-        return this.countScale(d.SOI);
-      })
-      .attr('r', '2')
-      // Hover
-      .on('mouseover', (d) => {
-        this.showTooltip(
-          d.month + ', ' + parseInt(d.year) + ': <br>' + Math.round(d.SOI*100)/100,
-          d3.event.pageX,
-          d3.event.pageY
-        );
-      })
-      .on('mouseleave', (d) => {
-        this.hideTooltip();
-      });
-
-
-  }
-
   createTooltipIfDoesntExist () {
     if (this.tooltipContainer !== null) {
       return;
@@ -148,7 +126,7 @@ class SOIPerYearChart {
 
     this.tooltipContainer = this.chartContainer
       .append('div')
-      .attr('class', 'c-tooltip');
+      .attr('class', 'c-tooltip')
   }
 
   showTooltip (content, left, top) {
@@ -156,8 +134,8 @@ class SOIPerYearChart {
 
     this.tooltipContainer
       .html(content)
-      .style('left', left + 'px')
-      .style('top', top + 'px');
+      .style('left', left+10 + 'px')
+      .style('top', top+10 + 'px');
 
     this.tooltipContainer
       .transition()
@@ -173,6 +151,4 @@ class SOIPerYearChart {
       .duration(300)
       .style('opacity', 0);
   }
-
-
 }
