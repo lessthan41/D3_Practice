@@ -135,7 +135,7 @@ class SOIPerYearChart {
     this.tooltipContainer
       .html(content)
       .style('left', left+10 + 'px')
-      .style('top', top+10 + 'px');
+      .style('top', top+50 + 'px');
 
     this.tooltipContainer
       .transition()
