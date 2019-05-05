@@ -1,26 +1,28 @@
-class SOIPerYearChart {
-  constructor(SOI) {
-    // console.log(SOI);
-    this.SOIDimension = SOI.dimension(function(SOI) {
-      return SOI.year + SOI.month;
+class AQIPerDayChart {
+  constructor(AQI) {
+    // console.log(AQI);
+    this.AQIDimension = AQI.dimension(function(AQI) {
+      return AQI.date + AQI.AQI;
     });
-    // console.log(this.SOIDimension.top(Infinity));
+    // console.log(this.AQIDimension.top(Infinity));
     this.chartContainer = d3.select('#AQIPerDayChart');
     this.chart = null; // This will hold chart SVG Dom element reference
     this.chartWidth = 960; // Width in pixels
     this.chartHeight = 400; // Height in pixels
     this.margin = 50; // Margin in pixels
     this.chartHeightWithoutMargin = this.chartHeight - this.margin;
-    this.countScale = null;
-    this.yearScale = null;
+    this.AQIScale = null;
+    this.dateScale = null;
     this.tooltipContainer = null;
   }
 
   render() {
     this.createSvg();
     this.initScales();
+    this.bgColor();
     this.drawAxes();
     this.drawLine();
+    this.drawDottedLine();
     this.drawPoints();
   }
 
@@ -32,18 +34,52 @@ class SOIPerYearChart {
   }
 
   initScales () {
-    // TODO potentially unsafe, if top() returns []
     let chartWidth = +this.chart.attr('width') - this.margin;
     let chartHeight = +this.chart.attr('height') - this.margin;
 
-    this.countScale = d3.scaleLinear().domain([-40, 40]).range([chartHeight, this.margin]);
-    // TODO We are hardcoding years for now
-    this.yearScale = d3.scaleLinear().domain([1979, 2020]).range([this.margin, chartWidth]);
+    this.AQIScale = d3.scaleLinear().domain([0, 200]).range([chartHeight, this.margin]);
+    this.dateScale = d3.scaleLinear().domain([0, 30]).range([this.margin, chartWidth]);
+  }
+
+  // Change Bgcolor
+  bgColor () {
+
+    this.chart.append('rect') // 150 - 200
+      .attr('height', (this.chartHeight - 2*this.margin)/4)
+      .attr('width', this.chartWidth - 2*this.margin)
+      .attr('x', this.margin)
+      .attr('y', this.margin)
+      .attr('fill', '#ff0000')
+      .attr('opacity', 0.5);
+
+    this.chart.append('rect') // 100 - 150
+      .attr('height', (this.chartHeight - 2*this.margin)/4)
+      .attr('width', this.chartWidth - 2*this.margin)
+      .attr('x', this.margin)
+      .attr('y', this.margin + (this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
+      .attr('fill', '#ff7e00')
+      .attr('opacity', 0.5);
+
+    this.chart.append('rect') // 50 - 100
+      .attr('height', (this.chartHeight - 2*this.margin)/4)
+      .attr('width', this.chartWidth - 2*this.margin)
+      .attr('x', this.margin)
+      .attr('y', this.margin + 2*(this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
+      .attr('fill', '#ffff00')
+      .attr('opacity', 0.5);
+
+    this.chart.append('rect') // 0 - 50
+      .attr('height', (this.chartHeight - 2*this.margin)/4)
+      .attr('width', this.chartWidth - 2*this.margin)
+      .attr('x', this.margin)
+      .attr('y', this.margin + 3*(this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
+      .attr('fill', '#00e800')
+      .attr('opacity', 0.5);
   }
 
   drawAxes () {
-    let countAxis = d3.axisLeft(this.countScale);
-    let yearAxis = d3.axisBottom(this.yearScale);
+    let countAxis = d3.axisLeft(this.AQIScale);
+    let dateAxis = d3.axisBottom(this.dateScale);
 
     this.chart
       .append('g')
@@ -56,100 +92,165 @@ class SOIPerYearChart {
         .attr('x', '15')
         .attr('dy', '2.5em')
         .attr('font-size', 'larger')
-        .text("SOI Index");
+        .text("AQI Index");
 
     this.chart
       .append('g')
       .attr('class', 'c-axis')
       .attr('transform', 'translate(0, ' + this.chartHeightWithoutMargin + ')')
-      .call(yearAxis)
+      .call(dateAxis)
       .append('g')
       .append('text')
         .attr("fill", "currentColor")
         .attr('x', '500')
         .attr('dy', '3.5em')
         .attr('font-size', 'larger')
-        .text("Year");
-  }
+        .text("Date");
 
-  /**
-  * Reverse the Dataset
-  */
-  dimensionReorder(SOI) {
-    let reorder = SOI.reverse();
-    // console.log(reorder);
-    let tmp, toInsert;
-    let i, j = 0;
+    // Append Text
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '290')
+        .attr('dy', '29em')
+        .attr('font-size', 'smaller')
+        .text("Data Loss")
 
-    for(i=0; i<39; i++){
-      tmp = reorder[11+12*i];
-      // console.log(tmp);
-      toInsert =[
-        tmp, reorder[0+12*i], reorder[1+12*i],
-        reorder[2+12*i], reorder[3+12*i], reorder[4+12*i],
-        reorder[5+12*i], reorder[6+12*i], reorder[7+12*i],
-        reorder[8+12*i], reorder[9+12*i], reorder[10+12*i]
-      ];
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '922')
+        .attr('dy', '27.25em')
+        .attr('font-size', 'smaller')
+        .text("Good")
 
-      for(j=0; j<12; j++){
-        reorder[j+12*i] = toInsert[j];
-      }
-    }
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '917')
+        .attr('dy', '21em')
+        .attr('font-size', 'smaller')
+        .text("Normal")
 
-    toInsert =[reorder[470], reorder[468], reorder[469]];
-    for(j=0; j<3; j++){
-      reorder[468 + j] = toInsert[j];
-    }
-    // console.log(reorder);
-    return(reorder);
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '925')
+        .attr('dy', '14.5em')
+        .attr('font-size', 'smaller')
+        .text("Bad")
+
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '920')
+        .attr('dy', '7.5em')
+        .attr('font-size', 'smaller')
+        .text("Pretty")
+    this.chart // Same Place
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '923')
+        .attr('dy', '8.75em')
+        .attr('font-size', 'smaller')
+        .text("Bad")
+}
+
+  // Reverse the Dataset
+  dimensionReorder(AQI) {
+    AQI.sort(function (a, b) {
+     return a.date > b.date ? 1 : -1;
+    });
+    AQI.splice(7,1); // remove 8th
+    return AQI
   }
 
   drawLine () {
 
     let line = d3.line()
       .x((d) => {
-        return this.yearScale(d.year);
+        return this.dateScale(d.date);
       })
       .y((d) => {
-        return this.countScale(d.SOI);
+        return this.AQIScale(d.AQI);
       });
 
-    // console.log(this.dimensionReorder(this.SOIDimension.top(Infinity)));
     // Line
     this.chart
       .append('g')
       .attr('class', 'c-line')
       .append('path')
-      .attr('d', line(this.dimensionReorder(this.SOIDimension.top(Infinity))));
-
-    // Absline
-    this.chart
-      .append('g')
-      .attr('class', 'abs-line')
-      .append('path')
-      .attr('d', line([{year: 1979, month: "Jan", SOI: 0}, {year: 2020, month: "Dec", SOI: 0}]));
-
+      .attr('d', line(this.dimensionReorder(this.AQIDimension.top(Infinity))));
   }
 
-  drawPoints(){
+  drawDottedLine () {
+
+    let line = d3.line()
+      .x((d) => {
+        return this.dateScale(d.date);
+      })
+      .y((d) => {
+        return this.AQIScale(d.AQI);
+      });
+
+    this.chart
+      .append('g')
+      .attr('class', 'dotted-line')
+      .append('path')
+      .attr('d', line([this.dimensionReorder(this.AQIDimension.top(Infinity))[6], {AQI: 0, date: 8},
+                       this.dimensionReorder(this.AQIDimension.top(Infinity))[7]]))
+      .style("stroke-dasharray", ("6, 6"));
+  }
+
+  drawPoints () {
     this.chart
       .append('g')
       .attr('class', 'c-points')
       .selectAll('circle')
-      .data(this.SOIDimension.top(Infinity))
+      .data(this.AQIDimension.top(Infinity))
       .enter()
       .append('circle')
       .attr('cx', (d) => {
-        return this.yearScale(d.year);
+        return this.dateScale(d.date);
       })
       .attr('cy', (d) => {
-        return this.countScale(d.SOI);
+        return this.AQIScale(d.AQI);
       })
       .attr('r', '2')
       // Hover
       .on('mouseover', (d) => {
+        let toShow;
+        switch (parseInt(d.date)) {
+          case 1:
+            toShow = 'st'
+            break;
+          case 21:
+            toShow = 'st'
+            break;
+          case 2:
+            toShow = 'nd'
+            break;
+          case 22:
+            toShow = 'nd'
+            break;
+          case 3:
+            toShow = 'rd'
+            break;
+          case 23:
+            toShow = 'rd'
+            break;
+          default:
+            toShow = 'th'
+        }
+
         this.showTooltip(
-          d.month + ', ' + parseInt(d.year) + ': <br>' + Math.round(d.SOI*100)/100,
+          'AQI：' + Math.round(d.AQI*100)/100 + '<br>' + parseInt(d.date) + toShow + ', Nov.',
           d3.event.pageX,
           d3.event.pageY
         );
@@ -157,8 +258,6 @@ class SOIPerYearChart {
       .on('mouseleave', (d) => {
         this.hideTooltip();
       });
-
-
   }
 
   createTooltipIfDoesntExist () {
@@ -180,6 +279,7 @@ class SOIPerYearChart {
       .style('top', top+20 + 'px');
 
     this.tooltipContainer
+      .style('display', null)
       .transition()
       .duration(100)
       .style('opacity', 1);
@@ -192,7 +292,10 @@ class SOIPerYearChart {
       .transition()
       .duration(300)
       .style('opacity', 0);
+
+    setTimeout(function(){}, 300);
+
+    this.tooltipContainer
+      .style('display', 'none');
   }
-
-
 }

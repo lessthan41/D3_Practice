@@ -1,19 +1,15 @@
 class DashboardComponent {
-  constructor (SOI) {
-    // console.log(SOI);
-    // We don't store athletes
-    this.SOI = crossfilter(SOI);
-    // console.log(this.SOI);
+  constructor (AQI) {
+    // console.log(AQI);
+    this.AQI = crossfilter(AQI);
   }
 
   init () {
-    this.initSOIChart();
+    this.initAQIChart();
   }
 
-  initSOIChart () {
-    let varSOIPerYearChart = new SOIPerYearChart(this.SOI);
-    varSOIPerYearChart.render();
+  initAQIChart () {
+    let varAQIPerDayChart = new AQIPerDayChart(this.AQI);
+    varAQIPerDayChart.render();
   }
 }
-
-// module.exports = DashboardComponent;

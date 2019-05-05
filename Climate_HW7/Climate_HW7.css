@@ -60,11 +60,11 @@ a {
   height: 100%;
 }
 
-.abs-line{
-  stroke: #f72525;
-  stroke-width: 1px;
+.dotted-line {
+  stroke: #2f6bda;
+  stroke-width: 2px;
   fill: none;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .c-chart .c-points circle {
