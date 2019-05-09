@@ -1,29 +1,33 @@
 class AQIPerDayChart {
-  constructor(AQI, aims) {
-    // console.log(AQI);
-    this.AQIDimension = AQI.dimension(function(AQI) {
-      return AQI.date + AQI.AQI;
-    });
+  constructor(AQI, aims, key, legendContent, max = 100) {
+    this.AQIDimension = AQI.dimension(function(AQI) { return AQI });
     // console.log(this.AQIDimension.top(Infinity));
+    this.unit = key == 'PM25' ? 'μg/m3' : 'ppb';
+    this.toPlot7 = new Array();
+    this.toPlot11 = new Array();
+    this.key = key;
+    this.max = max;
     this.chartContainer = d3.select(aims);
     this.chart = null; // This will hold chart SVG Dom element reference
     this.chartWidth = 960; // Width in pixels
     this.chartHeight = 400; // Height in pixels
     this.margin = 50; // Margin in pixels
     this.chartHeightWithoutMargin = this.chartHeight - this.margin;
-    this.AQIScale = null;
-    this.dateScale = null;
+    this.YScale = null;
+    this.hourScale = null;
     this.tooltipContainer = null;
+    this.legendContent = legendContent;
+    this.color = ['aliceblue','#2055b6','#ffd1d1','#e81717']; // back, bor, back, bor
   }
 
   render() {
     this.createSvg();
     this.initScales();
-    this.bgColor();
     this.drawAxes();
+    this.setToPlot();
     this.drawLine();
-    this.drawDottedLine();
     this.drawPoints();
+    this.drawLegend();
   }
 
   createSvg () {
@@ -36,50 +40,13 @@ class AQIPerDayChart {
   initScales () {
     let chartWidth = +this.chart.attr('width') - this.margin;
     let chartHeight = +this.chart.attr('height') - this.margin;
-
-    this.AQIScale = d3.scaleLinear().domain([0, 200]).range([chartHeight, this.margin]);
-    this.dateScale = d3.scaleLinear().domain([0, 30]).range([this.margin, chartWidth]);
-  }
-
-  // Change Bgcolor
-  bgColor () {
-
-    this.chart.append('rect') // 150 - 200
-      .attr('height', (this.chartHeight - 2*this.margin)/4)
-      .attr('width', this.chartWidth - 2*this.margin)
-      .attr('x', this.margin)
-      .attr('y', this.margin)
-      .attr('fill', '#ff0000')
-      .attr('opacity', 0.5);
-
-    this.chart.append('rect') // 100 - 150
-      .attr('height', (this.chartHeight - 2*this.margin)/4)
-      .attr('width', this.chartWidth - 2*this.margin)
-      .attr('x', this.margin)
-      .attr('y', this.margin + (this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
-      .attr('fill', '#ff7e00')
-      .attr('opacity', 0.5);
-
-    this.chart.append('rect') // 50 - 100
-      .attr('height', (this.chartHeight - 2*this.margin)/4)
-      .attr('width', this.chartWidth - 2*this.margin)
-      .attr('x', this.margin)
-      .attr('y', this.margin + 2*(this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
-      .attr('fill', '#ffff00')
-      .attr('opacity', 0.5);
-
-    this.chart.append('rect') // 0 - 50
-      .attr('height', (this.chartHeight - 2*this.margin)/4)
-      .attr('width', this.chartWidth - 2*this.margin)
-      .attr('x', this.margin)
-      .attr('y', this.margin + 3*(this.chartHeight - 2*this.margin)/4) // margin + 1/4圖表長
-      .attr('fill', '#00e800')
-      .attr('opacity', 0.5);
+    this.YScale = d3.scaleLinear().domain([0, this.max]).range([chartHeight, this.margin]);
+    this.hourScale = d3.scaleLinear().domain([0, 23]).range([this.margin, chartWidth]);
   }
 
   drawAxes () {
-    let countAxis = d3.axisLeft(this.AQIScale);
-    let dateAxis = d3.axisBottom(this.dateScale);
+    let countAxis = d3.axisLeft(this.YScale);
+    let dateAxis = d3.axisBottom(this.hourScale);
 
     this.chart
       .append('g')
@@ -89,10 +56,10 @@ class AQIPerDayChart {
       .append('g')
       .append('text')
         .attr("fill", "currentColor")
-        .attr('x', '15')
+        .attr('x', '70')
         .attr('dy', '2.5em')
         .attr('font-size', 'larger')
-        .text("AQI Index");
+        .text("Concentration (" + this.unit + ")");
 
     this.chart
       .append('g')
@@ -105,80 +72,26 @@ class AQIPerDayChart {
         .attr('x', '500')
         .attr('dy', '3.5em')
         .attr('font-size', 'larger')
-        .text("Date");
-
-    // Append Text
-    this.chart
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '290')
-        .attr('dy', '29em')
-        .attr('font-size', 'smaller')
-        .text("Data Loss")
-
-    this.chart
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '922')
-        .attr('dy', '27.25em')
-        .attr('font-size', 'smaller')
-        .text("Good")
-
-    this.chart
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '917')
-        .attr('dy', '21em')
-        .attr('font-size', 'smaller')
-        .text("Normal")
-
-    this.chart
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '925')
-        .attr('dy', '14.5em')
-        .attr('font-size', 'smaller')
-        .text("Bad")
-
-    this.chart
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '920')
-        .attr('dy', '7.5em')
-        .attr('font-size', 'smaller')
-        .text("Pretty")
-    this.chart // Same Place
-      .append('g')
-      .append('text')
-        .attr("fill", "currentColor")
-        .attr('x', '923')
-        .attr('dy', '8.75em')
-        .attr('font-size', 'smaller')
-        .text("Bad")
+        .text("Hour");
 }
 
   // Reverse the Dataset
-  dimensionReorder(AQI) {
-    AQI.sort(function (a, b) {
-     return a.date > b.date ? 1 : -1;
-    });
-    AQI.splice(7,1); // remove 8th
-    return AQI
+  setToPlot() {
+    let hourCount = 0;
+    for(var i=this.AQIDimension.top(Infinity).length-1; i>=0; i--){
+      this.toPlot7.push({ concentration: this.AQIDimension.top(Infinity)[i][this.key+'_7'], hour: hourCount });
+      this.toPlot11.push({ concentration: this.AQIDimension.top(Infinity)[i][this.key+'_11'], hour: hourCount });
+      hourCount++;
+    }
   }
 
   drawLine () {
-
     let line = d3.line()
       .x((d) => {
-        return this.dateScale(d.date);
+        return this.hourScale(d.hour);
       })
       .y((d) => {
-        return this.AQIScale(d.AQI);
+        return this.YScale(d.concentration);
       });
 
     // Line
@@ -186,26 +99,13 @@ class AQIPerDayChart {
       .append('g')
       .attr('class', 'c-line')
       .append('path')
-      .attr('d', line(this.dimensionReorder(this.AQIDimension.top(Infinity))));
-  }
-
-  drawDottedLine () {
-
-    let line = d3.line()
-      .x((d) => {
-        return this.dateScale(d.date);
-      })
-      .y((d) => {
-        return this.AQIScale(d.AQI);
-      });
+      .attr('d', line(this.toPlot7));
 
     this.chart
       .append('g')
-      .attr('class', 'dotted-line')
+      .attr('class', 'c-line2')
       .append('path')
-      .attr('d', line([this.dimensionReorder(this.AQIDimension.top(Infinity))[6], {AQI: 0, date: 8},
-                       this.dimensionReorder(this.AQIDimension.top(Infinity))[7]]))
-      .style("stroke-dasharray", ("6, 6"));
+      .attr('d', line(this.toPlot11));
   }
 
   drawPoints () {
@@ -213,66 +113,65 @@ class AQIPerDayChart {
       .append('g')
       .attr('class', 'c-points')
       .selectAll('circle')
-      .data(this.AQIDimension.top(Infinity))
+      .data(this.toPlot7)
       .enter()
       .append('circle')
       .attr('cx', (d) => {
-        return this.dateScale(d.date);
+        return this.hourScale(d.hour);
       })
       .attr('cy', (d) => {
-        return this.AQIScale(d.AQI);
+        return this.YScale(d.concentration);
       })
       .attr('r', '2')
-      // Hover
-      .on('mouseover', (d) => {
-        let toShow;
-        switch (parseInt(d.date)) {
-          case 1:
-            toShow = 'st'
-            break;
-          case 21:
-            toShow = 'st'
-            break;
-          case 2:
-            toShow = 'nd'
-            break;
-          case 22:
-            toShow = 'nd'
-            break;
-          case 3:
-            toShow = 'rd'
-            break;
-          case 23:
-            toShow = 'rd'
-            break;
-          default:
-            toShow = 'th'
-        }
+      .on('mouseover', (d) => { // Hover
+        this.createHover(d, [this.color[0], this.color[1]]);
+      })
+      .on('mouseleave', (d) => {
+        this.hideTooltip();
+      });
 
-        this.showTooltip(
-          'AQI：' + Math.round(d.AQI*100)/100 + '<br>' + parseInt(d.date) + toShow + ', Nov.',
-          d3.event.pageX,
-          d3.event.pageY
-        );
+    this.chart
+      .append('g')
+      .attr('class', 'c-points2')
+      .selectAll('circle')
+      .data(this.toPlot11)
+      .enter()
+      .append('circle')
+      .attr('cx', (d) => {
+        return this.hourScale(d.hour);
+      })
+      .attr('cy', (d) => {
+        return this.YScale(d.concentration);
+      })
+      .attr('r', '2')
+      .on('mouseover', (d) => { // Hover
+        this.createHover(d, [this.color[2], this.color[3]]);
       })
       .on('mouseleave', (d) => {
         this.hideTooltip();
       });
   }
 
+  createHover (d, color) {
+      this.showTooltip(
+        'Hour : '+ parseInt(d.hour) +'<br>Con：' + Math.round(d.concentration*100)/100 +' '+ this.unit ,
+        d3.event.pageX,
+        d3.event.pageY,
+        color
+      );
+  }
+
   createTooltipIfDoesntExist () {
     if (this.tooltipContainer !== null) {
       return;
     }
-
     this.tooltipContainer = this.chartContainer
       .append('div')
       .attr('class', 'c-tooltip');
   }
 
-  showTooltip (content, left, top) {
+  showTooltip (content, left, top, color) {
     this.createTooltipIfDoesntExist();
-
     this.tooltipContainer
       .html(content)
       .style('left', left+10 + 'px')
@@ -280,6 +179,8 @@ class AQIPerDayChart {
 
     this.tooltipContainer
       .style('display', null)
+      .style('background', color[0])
+      .style('border-color', color[1])
       .transition()
       .duration(100)
       .style('opacity', 1);
@@ -287,7 +188,6 @@ class AQIPerDayChart {
 
   hideTooltip () {
     this.createTooltipIfDoesntExist();
-
     this.tooltipContainer
       .transition()
       .duration(300)
@@ -297,5 +197,43 @@ class AQIPerDayChart {
 
     this.tooltipContainer
       .style('display', 'none');
+  }
+
+  drawLegend () {
+    // Color ball
+    this.chart
+      .append('g')
+      .attr('class', 'c-legend')
+        .append('circle')
+          .attr('r', '4')
+          .attr('cx', '800')
+          .attr('cy', '3.5em')
+          .style("fill", '#2f6bda');
+
+    this.chart
+      .append('g')
+      .attr('class', 'c-legend')
+        .append('circle')
+          .attr('r', '4')
+          .attr('cx', '800')
+          .attr('cy', '2em')
+          .style("fill", '#f24943');
+
+    // Line Name
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '810')
+        .attr('dy', '3.8em')
+        .text(this.legendContent[0]);
+
+    this.chart
+      .append('g')
+      .append('text')
+        .attr("fill", "currentColor")
+        .attr('x', '810')
+        .attr('dy', '2.3em')
+        .text(this.legendContent[1]);
   }
 }

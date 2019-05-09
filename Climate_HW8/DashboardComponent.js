@@ -9,9 +9,11 @@ class DashboardComponent {
   }
 
   initAQIChart () {
-    let varAQIPerDayChart = new AQIPerDayChart(this.AQI, '#AQIPerDayChart');
-    varAQIPerDayChart.render();
-    let varAQIPerDayChart2 = new AQIPerDayChart(this.AQI, '#AQIPerDayChart2');
-    varAQIPerDayChart2.render();
+    let SO2Chart = new AQIPerDayChart(this.AQI, '#SO2PerHourChart', 'SO2', ['July', 'November'], 20);
+    SO2Chart.render();
+    let O3Chart = new AQIPerDayChart(this.AQI, '#O3PerHourChart', 'O3', ['July', 'November']);
+    O3Chart.render();
+    let PM25Chart = new AQIPerDayChart(this.AQI, '#PM25PerHourChart', 'PM25', ['July', 'November']);
+    PM25Chart.render();
   }
 }
