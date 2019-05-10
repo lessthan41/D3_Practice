@@ -65,13 +65,12 @@ a {
     opacity: 1;
     cursor: pointer;
   }
-.c-chart .c-line2 {
+.c-chart .c-line2, .dotted-line {
   stroke: #f24943;
   stroke-width: 2.5px;
   fill: none;
   opacity: 0.6;
 }
-
 
 .c-axis {
   width: 100%;
