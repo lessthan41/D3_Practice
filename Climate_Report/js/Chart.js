@@ -1,4 +1,4 @@
-class AQIChart {
+class Chart {
   constructor(AQI, aims, key, legendContent, Ymax = 100, hour = true) {
     this.AQIDimension = AQI.dimension(function(AQI) { return AQI });
     // console.log(this.AQIDimension.top(Infinity));
