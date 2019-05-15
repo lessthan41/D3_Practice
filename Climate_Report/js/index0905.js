@@ -4,22 +4,22 @@
   // 0905
   d3.dsv(',', 'https://raw.githubusercontent.com/lessthan41/D3_Practice/master/Climate_Report/data/airdata_0905.csv', function (row) {
     return {
-      NOx: +row['NOx (ppb)'],
-      O3: +row['O3 (ppb)'],
-      NO: +row['NO (ppb)'],
-      NO2: +row['NO2 (ppb)'],
-      BENZENE: +row['BENZENE (ppb)'],
-      TOLUENE: +row['TOLUENE (ppb)'],
-      ETHYLBENZENE: +row['ETHYLBENZENE (ppb)'],
-      M_P_XYLENES: +row['M_P_XYLENES (ppb)'],
-      O_XYLENE: +row['O_XYLENE (ppb)'],
-      SO2: +row['SO2 (ppb)'],
-      PM25: +row['PM 2.5  (Miug/m 3 )'],
-      PM10: +row['PM 10  (Miug/m 3 )'],
-      NMHC: +row['NMHC (ppm)'],
-      CO: +row['CO (ppm)'],
-      CH4: +row['CH4 (ppm)'],
-      THC: +row['THC (ppm)']
+      NOx: +row['NOx(ppb)'],
+      O3: +row['O3(ppb)'],
+      NO: +row['NO(ppb)'],
+      NO2: +row['NO2(ppb)'],
+      BENZENE: +row['BENZENE(ppb)'],
+      TOLUENE: +row['TOLUENE(ppb)'],
+      ETHYLBENZENE: +row['ETHYLBENZENE(ppb)'],
+      M_P_XYLENES: +row['M_P_XYLENES(ppb)'],
+      O_XYLENE: +row['O_XYLENE(ppb)'],
+      SO2: +row['SO2(ppb)'],
+      PM25: +row['PM2.5(miug/m3)'],
+      PM10: +row['PM10(miug/m3)'],
+      NMHC: +row['NMHC(ppm)'],
+      CO: +row['CO(ppm)'],
+      CH4: +row['CH4(ppm)'],
+      THC: +row['THC(ppm)']
     };
   }).then(function (Air) {
 
