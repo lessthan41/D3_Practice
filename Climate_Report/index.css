@@ -47,30 +47,33 @@ a {
     opacity: 1;
     cursor: pointer;
   }
-.c-chart .c-line {
+.c-chart .c-line, .c-chart .dotted-line {
   stroke: #2f6bda;
   stroke-width: 2.5px;
   fill: none;
   opacity: 0.6;
 }
-.c-chart .c-points2 circle {
+.c-chart #c-points2 circle {
   stroke: #f24943;
   fill: #f24943;
-  stroke-width: 3px;
-  opacity: 0.8;
-  transition: all 0.2s ease-out;
 }
-  .c-chart .c-points2 circle:hover {
+  .c-chart #c-points2 circle:hover {
     fill: #e02121;
-    opacity: 1;
-    cursor: pointer;
   }
-.c-chart .c-line2, .dotted-line {
+.c-chart #c-line2 {
   stroke: #f24943;
-  stroke-width: 2.5px;
-  fill: none;
-  opacity: 0.6;
 }
+.c-chart #c-points3 circle {
+  stroke: #16601f;
+  fill: #04330a;
+}
+  .c-chart #c-points3 circle:hover {
+    fill: #04330a;
+  }
+.c-chart #c-line3 {
+  stroke: #0a7017;
+}
+
 
 .c-axis {
   width: 100%;
