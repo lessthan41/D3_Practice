@@ -51,6 +51,7 @@ let CH4 = new Array();
 let THC = new Array();
 
 setTimeout(function() {
+  console.log('New Version');
   for(var i in Air){
     NOx.push({ NOx: Air[i]['NOx'] });
     O3.push({ O3: Air[i]['O3'] });

@@ -1,6 +1,7 @@
 
+
 class Chart {
-  
+
   constructor(Air, Car, aims, ylab1, ylab2, unitCar, unitAir, Ymax1 = 100, Ymax2 = 100) {
     this.CarDimension = Car.dimension(function(Car) {
       return Car
