@@ -1,4 +1,4 @@
-class DashboardComponent { 
+class DashboardComponent {
   constructor (Air, CarFlow, aim, unit, Ymax = 100) {
     this.AirComponent = Object.keys(Air[0]); // Pollutant Name
     this.Air = crossfilter(Air);

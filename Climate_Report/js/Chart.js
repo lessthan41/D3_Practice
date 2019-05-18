@@ -1,11 +1,13 @@
+
 class Chart {
+  
   constructor(Air, Car, aims, ylab1, ylab2, unitCar, unitAir, Ymax1 = 100, Ymax2 = 100) {
     this.CarDimension = Car.dimension(function(Car) {
       return Car
     });
     this.AirDimension = Air.dimension(function(Air) {
       return Air
-    }); 
+    });
     // console.log(this.CarDimension.top(Infinity));
     this.ylab1 = ylab1;
     this.ylab2 = ylab2;
