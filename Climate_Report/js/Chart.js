@@ -5,7 +5,7 @@ class Chart {
     });
     this.AirDimension = Air.dimension(function(Air) {
       return Air
-    });
+    }); 
     // console.log(this.CarDimension.top(Infinity));
     this.ylab1 = ylab1;
     this.ylab2 = ylab2;
@@ -226,7 +226,7 @@ class Chart {
         .style('opacity', 0.7)
         .style('stroke', '#f24943')
         .style("stroke-dasharray", ("6, 6"));
-        
+
       // Append text
       if(Object.values(toPlot[i - 1])[0] != 0){
         this.chart
