@@ -65,25 +65,25 @@ a {
 }
 
 .c-chart #c-points3 circle {
-  stroke: #8b86e088;
-  fill: #8b86e088;
+  stroke: rgba(139, 134, 224, 0.5);
+  fill: rgba(139, 134, 224, 0.5);
 }
   .c-chart #c-points3 circle:hover {
-    fill: #9993f988;
+    fill: rgba(153, 147, 249, 0.5);
   }
 .c-chart #c-line3 {
-  stroke: #9d99e588;
+  stroke: rgba(157, 153, 229, 0.5);
 }
 
 .c-chart #c-points4 circle {
-  stroke: #c9640088;
-  fill: #c9640088;
+  stroke: rgba(201, 100, 0, 0.5);
+  fill: rgba(201, 100, 0, 0.5);
 }
   .c-chart #c-points4 circle:hover {
-    fill: #e8730088;
+    fill: rgba(232, 115, 0, 0.5);
   }
 .c-chart #c-line4 {
-  stroke: #e5780b88;
+  stroke: rgba(229, 120, 11, 0.5);
 }
 
 
