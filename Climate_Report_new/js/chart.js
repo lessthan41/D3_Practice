@@ -412,7 +412,7 @@ class Chart {
       .attr('r', '4')
       .attr('cx', cx)
       .attr('cy', '6.5em')
-      .style("fill", 'rgb(201, 100, 0, 0.5)');
+      .style("fill", 'rgba(201, 100, 0, 0.5)');
 
 
     // Line Name
